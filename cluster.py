@@ -1,33 +1,39 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "1571dbb5-db76-4719-a1b4-2ec31cd35c09",
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python 3 (ipykernel)",
-   "language": "python",
-   "name": "python3"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.12.1"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 5
-}
+from collections import deque
+
+def cluster(graph, weights, level):
+    """
+    Computes clusters of a weighted graph at a given level.
+
+    Args:
+        graph: An instance of dsc40graph.UndirectedGraph
+        weights: A function returning the weight of edge (u, v)
+        level: Threshold for edge weights
+
+    Returns:
+        frozenset of frozensets, where each inner frozenset is a cluster of nodes
+    """
+    visited = set()
+    clusters = []
+
+    for start in graph.nodes:
+        if start in visited:
+            continue
+
+        component = set()
+        queue = deque([start])
+        visited.add(start)
+
+        while queue:
+            u = queue.popleft()
+            component.add(u)
+
+            for v in graph.neighbors(u):
+                if v in visited:
+                    continue
+                if weights(u, v) >= level:
+                    visited.add(v)
+                    queue.append(v)
+
+        clusters.append(frozenset(component))
+
+    return frozenset(clusters)
